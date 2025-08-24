@@ -261,6 +261,7 @@ export default class BookingsManager {
     }
 
     let user;
+    console.log("userId", userId);
     try {
       user = await ScyllaDb.getItem("fs_booking_settings", {
         id: String(userId),
@@ -272,8 +273,10 @@ export default class BookingsManager {
         message: `Database error occurred while checking user existence for user ID: ${userId}`,
       };
     }
+    console.log("user", user);
 
     if (!user || user.activity_status !== "active") {
+      console.log("user not active", user);
       const error = {
         error: "user_not_active",
         message:
@@ -838,6 +841,14 @@ export default class BookingsManager {
       };
     }
 
+    console.log("Booking INFO", creatorId,
+      appointmentStart,
+      appointmentEnd,
+      date,
+      defaultTokenPerMinute,
+      surchargeTokenPerMinute,
+      bookingSettings);
+
     // Get the cross-over data
     let crossoverData;
     try {
@@ -855,6 +866,8 @@ export default class BookingsManager {
         message: `Error checking appointment crossover for creator ID: ${creatorId}`,
       };
     }
+
+    console.log("crossoverData", crossoverData);
 
     const regularMinutes = crossoverData.minutes_in_default || 0;
     const afterHoursMinutes = crossoverData.minutes_in_after_hours || 0;
@@ -1186,7 +1199,7 @@ export default class BookingsManager {
       };
     }
 
-    const setCreatorTimeZone = Utilities.setCreatorTimeZone(creatorId);
+    const setCreatorTimeZone = await Utilities.setCreatorTimeZone(creatorId);
     if (!setCreatorTimeZone) return false;
 
     const bookingWindowInMinutes = parseInt(

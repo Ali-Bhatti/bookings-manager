@@ -73,7 +73,7 @@
     <label for="requestedEnd">End Time (YYYY-MM-DD HH:MM:SS):</label>
     <input type="text" id="requestedEnd" name="requestedEnd" value="2025-07-01 09:00:00" required>
 
-    <button type="submit">Check Availability</button>
+    <button id="checkAvailabilityButton" type="submit">Check Availability</button>
   </form>
 
   <div id="result"></div>
@@ -83,6 +83,8 @@
   document.getElementById("availabilityForm").addEventListener("submit", async function(event) {
     event.preventDefault();
 
+    document.getElementById("result").innerText = "loading...";
+    document.getElementById("checkAvailabilityButton").disabled = true;
     const creatorId = document.getElementById("creatorId").value;
     const requestedStart = document.getElementById("requestedStart").value;
     const requestedEnd = document.getElementById("requestedEnd").value;
@@ -94,12 +96,13 @@
       },
       body: JSON.stringify({ creatorId, requestedStart, requestedEnd })
     });
-    document.getElementById("result").innerText = "loading...";
+
     await new Promise(resolve => setTimeout(resolve, 1000)); 
     const result = await response.json();
     document.getElementById("result").innerText =
       "Is Time Available? " + (result.isAvailable === true ? "✅ Yes" : "❌ No" + JSON.stringify(result)
       );
+    document.getElementById("checkAvailabilityButton").disabled = false;
   });
 </script>
 
